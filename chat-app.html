@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+
+    <meta charset="UTF-8">
+    <title>Chat App</title>
+
+</head>
+
+<body>
+
+    <div id="messages"></div>
+    <div id="container">
+
+        <input type="text" id="username" placeholder="Type your username here">
+        <button id="login">Log in</button>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
+
+    <script>
+
+        var config = {
+            apiKey: "AIzaSyAwrExxiH0nMkEWZzfrgIxW6mXz2jyMHXk",
+            authDomain: "https://chat-app-l394.firebaseapp.com/",
+            databaseURL: "https://chat-app-l394.firebaseio.com/",
+            projectId: "chat-app-l394",
+        };
+        firebase.initializeApp(config);
+
+        var database = firebase.database();
+
+        var chatbox = []
+
+        function login() {
+            autolog()
+        }
+
+        function chat() {
+            let message = $('<input>')
+            let send = $('<button>')
+            message.attr("id", "type-message").attr("placeholder", "Type your message here")
+            send.attr("id", "send").text("Send")
+            $('#container').html(message).append(send)
+
+            database.ref().on('value', function (snapshot) {
+                    chatbox = snapshot.val()
+
+                    if (!chatbox) {
+                        chatbox = []
+                    }
+                    show()
+            })
+
+            $('#send').on('click', function () {
+                let users_message = $('#type-message').val()
+                chatbox.push({
+                    message: users_message,
+                    user: window.localStorage.getItem("name")
+                })
+
+                database.ref().set(chatbox)
+
+                $('#type-message').val('')
+
+            })
+        }
+
+
+        function show() {
+            $('#messages').empty()
+
+            for (let i in chatbox) {
+                $('#messages').append('<div>' + '<strong>' + chatbox[i].user + '</strong>' + ": " + chatbox[i].message + '</div>')
+            }
+        }
+
+        function autolog() {
+            var user = window.localStorage.getItem("name")
+            if (user !== null) {
+                chat()
+            } else {
+                $('#login').on('click', function () {
+                    var user = $('#username').val()
+                    window.localStorage.setItem('name', user)
+                    chat()
+                })
+            }
+        }
+
+        login()
+
+
+    // $("#click-button").on("click", function() {
+    //   clickCounter++;
+    //   database.ref().set({
+    //     clickCount: clickCounter
+    //   });
+    // });
+
+
+    // database.ref().on("value", function(snapshot) {
+    //   console.log(snapshot.val());
+    //   $("#click-value").text(snapshot.val().clickCount);
+    //   clickCounter = snapshot.val().clickCount;
+    // }, function(errorObject) {
+    //   console.log("The read failed: " + errorObject.code);
+    // });
+
+    </script>
+
+</body>
+
+</html>
