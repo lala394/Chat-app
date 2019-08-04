@@ -36,7 +36,16 @@
         var chatbox = []
 
         function login() {
-            autolog()
+            var user = window.localStorage.getItem("name")
+            if (user !== null) {
+                chat()
+            } else {
+                $('#login').on('click', function () {
+                    var user = $('#username').val()
+                    window.localStorage.setItem('name', user)
+                    chat()
+                })
+            }
         }
 
         function chat() {
@@ -75,19 +84,6 @@
 
             for (let i in chatbox) {
                 $('#messages').append('<div>' + '<strong>' + chatbox[i].user + '</strong>' + ": " + chatbox[i].message + '</div>')
-            }
-        }
-
-        function autolog() {
-            var user = window.localStorage.getItem("name")
-            if (user !== null) {
-                chat()
-            } else {
-                $('#login').on('click', function () {
-                    var user = $('#username').val()
-                    window.localStorage.setItem('name', user)
-                    chat()
-                })
             }
         }
 
